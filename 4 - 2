@@ -1,0 +1,68 @@
+    #include <iostream>
+    using namespace std;
+
+    int DXTR(int** G, int V, int* d){
+        int used[V];
+        int temp,minindex, min;
+        for (int i = 0; i < V; i++){
+            d[i] = 10000; // расстояние до всех точек бесконечность
+            used[i] = 0; // все вершины непосещнные
+        }
+        d[0] = 0; // расстояние до 0 = 0
+        do { //итеративный обход в ширину
+            minindex = 10000;
+            min = 10000;
+            for (int i = 0; i < V; i++){
+              if ((used[i] == 0) && (d[i] < min)){ 
+                min = d[i];
+                minindex = i; //поиск минимального индекса (первый раз 0)
+              }
+            }
+            if (minindex != 10000){ // если есть непосещенная вершина
+              for (int i = 0; i<V; i++){
+                if (G[minindex][i] > 0){
+                  temp = min + G[minindex][i];
+                  if (temp < d[i]) //если значение вершины больше, чем значение ребра + значение "предка"
+                    d[i] = temp; //поменять его
+                }
+              }
+              used[minindex] = 1;
+            }
+        } while (minindex < 10000); //пока есть непосещенные вершины
+
+        cout << " Distants from 0:" << endl;
+        for (int i = 0; i<V; i++)
+            cout << i << " : " << d[i] << endl;
+        int S = 0;
+        for(int i = 0; i < V; i++)
+            S = S + d[i];
+        return S;
+    }
+
+    void matrix(int**G, int V){
+        for (int i = 0; i<V; i++){
+            G[i][i] = 0;
+            int temp;
+            for (int j = i + 1; j < V; j++) {
+                cout << " Enter weight of edge "  << i << " - " << j << " ";
+                cin >> temp;
+                G[i][j] = temp;
+                G[j][i] = temp;
+            }
+        }
+    }
+
+int main(){
+    int V;
+    cout << " Enter amount of vertices:  " ;
+    cin >> V;
+    int **G = new int*[V];
+    for(int i = 0; i < V; i++)
+        G[i] = new int [V];
+    matrix(G,V);
+    int d[V];
+    int S;
+    S = DXTR(G,V,d);
+    cout << " Sum = " << S << endl;
+    return 0;
+}
