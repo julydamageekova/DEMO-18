@@ -1,0 +1,67 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+IS_CUTPOINT(int v){
+cout << endl << "  V = " << v << endl << endl;
+}
+void dfs (bool* used, int v, int p, int* tin,int* fup,int timer, vector<vector<int> >& G, int& S) {
+	used[v] = true;
+	tin[v] = fup[v] = timer++;
+	int children = 0;
+	for (size_t i=0; i<G[v].size(); ++i) {
+		int to = G[v][i];
+		if (to == p)  continue;
+		if (used[to])
+			fup[v] = min (fup[v], tin[to]);
+		else {
+			dfs (used, to, v,tin, fup,timer,G,S);
+			fup[v] = min (fup[v], fup[to]);
+			if (fup[to] >= tin[v] && p != -1){
+				IS_CUTPOINT(v);
+            S = S + G[i].size();
+			}
+			++children;
+		}
+	}
+	if (p == -1 && children > 1)
+		IS_CUTPOINT(v);
+}
+
+void matrixinlist(vector<vector<int> >&G,bool**G1, int V){
+    for(int i = 0; i < V; i++){
+        for(int j = 0; j < V; j++){
+            if(G1[i][j]==1);
+            G[i].push_back(j);
+        }
+    }
+}
+
+int main(){
+    int n,m,v,u;
+    cout <<" Number of vertices "; cin >> n;
+    cout <<" Number of edges "; cin >> m;
+    cout <<" Incidence edges" << endl;
+    vector <vector<int> > G(n);
+    bool** G1 = new bool*[n];
+    for (int i = 0; i < n; i++)
+            G1[i] = new bool [n];
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            G1[i][j] = 0;
+for (int i = 0; i < m; i++){
+    cin >> u >> v;
+    G1[u][v] = 1;
+    G1[v][u] = 1;
+}
+matrixinlist(G,G1,n);
+int S = 0;
+   int timer = 0;
+   bool used[n];
+   int tin[n], fup[n];
+	for (int i=0; i<n; ++i)
+		used[i] = false;
+	dfs (used,0,-1,tin,fup, timer, G,S);
+	cout << " S = " << S << endl;
+    return 0;
+}
